@@ -105,7 +105,7 @@ class DecisionTree:
             leaf_value = self.leaf_value(y)
             return Node(value=leaf_value)
 
-        # should prodcuce all feature indices, but just in case
+        # randomly choose the features we want to consider based on self.num_features (reduce dimensionality)
         feature_indices = np.random.choice(num_features, self.num_features, replace=False)
 
         # determine the best splitting feature given info gain
@@ -120,10 +120,12 @@ class DecisionTree:
 
     def fit(self, X, y):
         """Fit and train the tree based on the given data"""
+        # Automatically makes the # of features we want to consider the max
         if not self.num_features:
             self.num_features = X.shape[1]
+        # in the case that we inputted a higher or lower # of considered features
         else:
-            self.num_features = min(X.shape[1], self.num_features)  # in case that inputted num_features != X.shape[1]
+            self.num_features = min(X.shape[1], self.num_features)
 
         self.root = self.build_tree(X, y)
 
@@ -144,6 +146,7 @@ class DecisionTree:
         for x in X:
             prediction = self.predict_one_value(x, self.root)
             predictions.append(prediction)
+        # need to compare an array with an array for accuracy_score
         return np.array(predictions)
 
     def print_tree(self, root_node=None):
